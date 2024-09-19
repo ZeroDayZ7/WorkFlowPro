@@ -21,22 +21,26 @@ class User
     // Metoda do logowania
     public function login($username, $password)
     {
-        $query = "SELECT * FROM " . $this->table . " WHERE username = :username";
+        // Zapytanie do pobrania hasła, ID i roli użytkownika
+        $query = "SELECT id, username, password, role FROM " . $this->table . " WHERE username = :username";
         $stmt = $this->conn->prepare($query);
-
-        // Bind parameters
         $stmt->bindParam(':username', $username);
         $stmt->execute();
-
+        
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    
         if ($user && password_verify($password, $user['password'])) {
-            return $user;
+            // Zwróć dane użytkownika bez hasła
+            return [
+                'id' => $user['id'],
+                'username' => $user['username'],
+                'role' => $user['role']
+            ];
         } else {
+            // Nieprawidłowy login lub hasło
             return false;
         }
     }
-
     // Metoda do rejestracji
     public function register($username, $password)
     {
@@ -44,10 +48,8 @@ class User
         $stmt = $this->conn->prepare($query);
 
         // Bind parameters
-        $usernameParam = $username; // Zmienna
-        $passwordParam = password_hash($password, PASSWORD_DEFAULT); // Zmienna
-        $stmt->bindParam(':username', $usernameParam);
-        $stmt->bindParam(':password', $passwordParam);
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':password', password_hash($password, PASSWORD_DEFAULT));
 
         if ($stmt->execute()) {
             return true;

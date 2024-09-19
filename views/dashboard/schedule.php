@@ -135,7 +135,7 @@ function buildUrlWithParams($params)
 ?>
 
 
-<h1>Kalendarz - <?php echo date('F Y', strtotime("$year-$month-01")); ?></h1>
+<h1><?php echo date('F Y', strtotime("$year-$month-01")); ?></h1>
 
 <div class="navigation">
     <a href="<?php echo buildUrlWithParams(['month' => $prevMonth, 'year' => $prevYear]); ?>">&larr; Poprzedni miesiąc</a>

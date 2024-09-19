@@ -9,6 +9,7 @@ class Auth {
     public static function login($user) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role']; 
     }
 
     public static function logout() {

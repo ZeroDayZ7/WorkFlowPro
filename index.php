@@ -2,10 +2,17 @@
 session_start();
 include 'config.php';
 include BASE_PATH . '/views/header.php';
+
+// echo $_SESSION['user']['id'];
+// echo '<br>';
+// echo $_SESSION['user']['username'];
+// echo '<br>';
+// echo $_SESSION['user']['role'];
+// echo '<br>';
 ?>
 
 <div id="app">
-    <?php if (!isset($_SESSION['user'])): ?>
+    <?php if (isset($_SESSION['user'])): ?>
         <!-- Układ wyśrodkowany dla użytkowników niezalogowanych -->
         <div id="content-center">
             <?php 
@@ -22,7 +29,8 @@ include BASE_PATH . '/views/header.php';
     <?php else: ?>
         <!-- Układ po zalogowaniu -->
         <div id="content">
-            <?php 
+            
+            <?php
             $page = isset($_GET['page']) ? $_GET['page'] : 'home';
             $pagePath = BASE_PATH . "/views/{$page}.php";
             

@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    echo $username;
     if ($loggedInUser = $user->login($username, $password)) {
         $_SESSION['user'] = $loggedInUser;
         header('Location: ' . BASE_URL . '?page=dashboard');

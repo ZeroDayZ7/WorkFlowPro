@@ -11,10 +11,14 @@ $user = $_SESSION['user'];
 <div class="sidebar">
     <h2>Menu</h2>
     <ul class="flex-left">
-        <li><a href="?page=dashboard&task=users">Użytkownicy</a></li>
+        <?php 
+        if (isset($user['role']) && $user['role'] === 'ADMIN') {
+            echo '<li><a href="?page=dashboard&task=users">Użytkownicy</a></li>';
+            echo '<li><a href="?page=dashboard&task=settings">Ustawienia</a></li>';
+        }
+        ?>
         <li><a href="?page=dashboard&task=schedule">Harmonogram</a></li>
         <li><a href="?page=dashboard&task=messages">Wiadomości</a></li>
-        <li><a href="?page=dashboard&task=settings">Ustawienia</a></li>
     </ul>
 </div>
 
@@ -39,6 +43,6 @@ $user = $_SESSION['user'];
         flex: 1;
         margin: 0px 200px;
         overflow: auto;
-        max-height: 630px;
+        max-height: 95%;
     }
 </style>

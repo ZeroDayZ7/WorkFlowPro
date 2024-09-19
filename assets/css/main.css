@@ -27,6 +27,9 @@ body {
 html, body {
     height: 100vh;
 }
+a{
+    text-decoration: none;
+}
 #app{
     flex: 1;
     display: flex;
@@ -39,23 +42,20 @@ html, body {
 #content-center {
     display: flex;
     justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    flex-direction: row;
     width: 100%;
-    height: 100%; /* Wyśrodkowanie pionowe */
+    height: 100%;
 }
 #content {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-start;
-    width: 100%;
-    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 .btn{
     padding: 4px;
     width: 100%;
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 .btn:hover{
     box-shadow: 0 0 1px 1px black;
