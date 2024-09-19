@@ -1,44 +1,91 @@
 <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .day {
-            border: 1px solid #ccc;
-            padding: 10px;
-            min-height: 100px;
-            position: relative;
-        }
-        .day-number {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            font-weight: bold;
-        }
-        .employee {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #333;
-        }
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .navigation a {
-            text-decoration: none;
-            font-size: 18px;
-            color: #007bff;
-        }
-        .navigation a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .day {
+        border: 1px solid #ccc;
+        padding: 10px;
+        min-height: 100px;
+        position: relative;
+    }
+
+    .day-number {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        font-weight: bold;
+    }
+
+    .employee {
+        font-size: 14px;
+        color: #333;
+    }
+
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .navigation a {
+        text-decoration: none;
+        font-size: 18px;
+        color: #007bff;
+    }
+
+    .navigation a:hover {
+        text-decoration: underline;
+    }
+
+    /* Modal Style */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
+
 <?php
 // Ustawienie domyślnych wartości (miesiąc, rok)
 $month = isset($_GET['month']) ? (int)$_GET['month'] : date('m');
@@ -67,14 +114,22 @@ $nextMonth = $month + 1 < 13 ? $month + 1 : 1;
 $prevYear = $month - 1 > 0 ? $year : $year - 1;
 $nextYear = $month + 1 < 13 ? $year : $year + 1;
 
-// Renderowanie kalendarza w HTML
+// Funkcja do generowania linków z zachowaniem istniejących parametrów
+function buildUrlWithParams($params) {
+    $currentUrl = $_SERVER['REQUEST_URI'];
+    $query = parse_url($currentUrl, PHP_URL_QUERY);
+    parse_str($query, $queryParams);
+    $queryParams = array_merge($queryParams, $params);
+    $newQuery = http_build_query($queryParams);
+    return strtok($currentUrl, '?') . '?' . $newQuery;
+}
 ?>
-
+ <button id="showCalendarBtn" class="btn-primary">Pokaż kalendarz</button>
 <h1>Kalendarz - <?php echo date('F Y', strtotime("$year-$month-01")); ?></h1>
 
 <div class="navigation">
-    <a href="?month=<?php echo $prevMonth; ?>&year=<?php echo $prevYear; ?>">&larr; Poprzedni miesiąc</a>
-    <a href="?month=<?php echo $nextMonth; ?>&year=<?php echo $nextYear; ?>">Następny miesiąc &rarr;</a>
+    <a href="<?php echo buildUrlWithParams(['month' => $prevMonth, 'year' => $prevYear]); ?>">&larr; Poprzedni miesiąc</a>
+    <a href="<?php echo buildUrlWithParams(['month' => $nextMonth, 'year' => $nextYear]); ?>">Następny miesiąc &rarr;</a>
 </div>
 
 <div class="calendar">
@@ -103,3 +158,114 @@ $nextYear = $month + 1 < 13 ? $year : $year + 1;
     }
     ?>
 </div>
+
+<!-- Modal -->
+<div id="employeeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div>Godziny pracy 08-20</div>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="calendarModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>Wybierz dzień</h2>
+            </div>
+            <div class="calendar" id="calendarModalContent">
+                <!-- Kalendarz zostanie załadowany tutaj przez JS -->
+            </div>
+            <button id="selectDateBtn" class="btn-primary">Wybierz dzień</button>
+        </div>
+    </div>
+
+<script>
+    // Przykładowe dane do modala
+    const employees = <?php echo json_encode($employees); ?>;
+
+    // Funkcja otwierająca modal
+    function openModal(day) {
+        let modalBody = document.getElementById('modal-body');
+        modalBody.innerHTML = ''; // Czyszczenie modala
+
+        // Wyświetlanie danych pracowników na dany dzień
+        employees.forEach(employee => {
+            if (employee.day === day) {
+                modalBody.innerHTML += `<h3>${employee.name}</h3><p>${employee.details}</p><p>Zmiana: ${employee.shift}</p><hr>`;
+            }
+        });
+
+        document.getElementById('employeeModal').style.display = "block";
+    }
+
+    // Funkcja zamykająca modal
+    function closeModal() {
+        document.getElementById('employeeModal').style.display = "none";
+    }
+
+    // Zamknięcie modala, gdy kliknie się poza jego treść
+    window.onclick = function(event) {
+        if (event.target === document.getElementById('employeeModal')) {
+            closeModal();
+        }
+    }
+
+
+
+
+
+// Open modal
+document.getElementById('showCalendarBtn').onclick = function() {
+            document.getElementById('calendarModal').style.display = 'flex';
+            loadCalendar();
+        }
+
+        // Close modal
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('calendarModal').style.display = 'none';
+        }
+
+        // Load calendar into modal
+        function loadCalendar() {
+            const calendarContainer = document.getElementById('calendarModalContent');
+            const now = new Date();
+            const month = now.getMonth() + 1; // Months are zero-based
+            const year = now.getFullYear();
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
+
+            let html = '';
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                html += '<div class="day"></div>';
+            }
+            for (let day = 1; day <= daysInMonth; day++) {
+                html += `<div class="day" data-day="${day}">${day}</div>`;
+            }
+            calendarContainer.innerHTML = html;
+
+            // Add click event to each day
+            calendarContainer.querySelectorAll('.day').forEach(dayElement => {
+                dayElement.onclick = function() {
+                    document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
+                    this.classList.add('selected');
+                }
+            });
+        }
+
+        // Select date and close modal
+        document.getElementById('selectDateBtn').onclick = function() {
+            const selectedDayElement = document.querySelector('.calendar .day.selected');
+            if (selectedDayElement) {
+                const selectedDay = selectedDayElement.getAttribute('data-day');
+                // Update the content with selected date
+                document.getElementById('main-content').innerHTML = `<h2>Wybrany dzień: ${selectedDay}</h2>`;
+                document.getElementById('calendarModal').style.display = 'none';
+            } else {
+                alert('Proszę wybrać dzień.');
+            }
+        }
+
+</script>

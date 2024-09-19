@@ -38,5 +38,7 @@ $user = $_SESSION['user'];
     #main-content {
         flex: 1;
         margin: 0px 200px;
+        overflow: auto;
+        max-height: 630px;
     }
 </style>
