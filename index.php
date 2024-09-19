@@ -1,9 +1,12 @@
-<?php include 'header.php'; ?>
+<?php 
+    include 'config.php';
+    include BASE_PATH . '/views/header.php';
+?>
 
 
-<h1>Witamy na stronie</h1>
-<a href="login.php"><button>Zaloguj się</button></a>
-<a href="register.php"><button>Zarejestruj się</button></a>
+<h1>Witamy w WorkFlowPro</h1>
+<a href="login"><button>Zaloguj się</button></a>
+<a href="register"><button>Zarejestruj się</button></a>
 
 
-<?php include 'footer.php'; ?>
+<?php include BASE_PATH . '/views/footer.php'; ?>

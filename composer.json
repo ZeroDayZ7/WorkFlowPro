@@ -11,5 +11,7 @@
             "email": "ZeroDayZ7@proton.me"
         }
     ],
-    "require": {}
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
 }

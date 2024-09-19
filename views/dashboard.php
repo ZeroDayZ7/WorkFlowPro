@@ -1,23 +1,19 @@
 <?php
 session_start();
+include '../config.php';
+include BASE_PATH . '/views/header.php';
+
 
 if (!isset($_SESSION['user'])) {
-    header('Location: login.php');
+    header('Location: ' . BASE_URL . '/index');
     exit();
 }
 
 $user = $_SESSION['user'];
-?>
 
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <title>Panel użytkownika</title>
-</head>
-<body>
+
+?>
     <h2>Witaj, <?php echo $user['username']; ?>!</h2>
     <p>To jest twój panel użytkownika.</p>
-    <a href="logout.php"><button>Wyloguj się</button></a>
-</body>
-</html>
+    <a href="<?php echo BASE_URL; ?>/logout"><button>Wyloguj się</button></a>
+<?php include BASE_PATH . '/views/footer.php'; ?>

@@ -1,9 +1,11 @@
 <?php
+
 namespace Classes;
 
 use PDO;
 
-class User {
+class User
+{
     private $conn;
     private $table = 'users';
 
@@ -11,12 +13,14 @@ class User {
     public $username;
     public $password;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
     // Metoda do logowania
-    public function login($username, $password) {
+    public function login($username, $password)
+    {
         $query = "SELECT * FROM " . $this->table . " WHERE username = :username";
         $stmt = $this->conn->prepare($query);
 
@@ -34,13 +38,16 @@ class User {
     }
 
     // Metoda do rejestracji
-    public function register($username, $password) {
+    public function register($username, $password)
+    {
         $query = "INSERT INTO " . $this->table . " (username, password) VALUES (:username, :password)";
         $stmt = $this->conn->prepare($query);
 
         // Bind parameters
-        $stmt->bindParam(':username', $username);
-        $stmt->bindParam(':password', password_hash($password, PASSWORD_DEFAULT));
+        $usernameParam = $username; // Zmienna
+        $passwordParam = password_hash($password, PASSWORD_DEFAULT); // Zmienna
+        $stmt->bindParam(':username', $usernameParam);
+        $stmt->bindParam(':password', $passwordParam);
 
         if ($stmt->execute()) {
             return true;

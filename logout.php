@@ -1,7 +1,8 @@
 <?php
 session_start();
-require_once 'classes/Auth.php';
+include 'config.php';
+require_once BASE_PATH . '/classes/Auth.php';
 
 Classes\Auth::logout();
-header('Location: login.php');
+header('Location: ' . BASE_URL . '/index');
 exit();
