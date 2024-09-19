@@ -1,0 +1,15 @@
+{
+    "name": "neo/project",
+    "autoload": {
+        "psr-4": {
+            "Neo\\Project\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ZeroDayZ7",
+            "email": "ZeroDayZ7@proton.me"
+        }
+    ],
+    "require": {}
+}
