@@ -1,19 +1,42 @@
 <?php
-session_start();
-include '../config.php';
-include BASE_PATH . '/views/header.php';
-
-
 if (!isset($_SESSION['user'])) {
     header('Location: ' . BASE_URL . '/index');
     exit();
 }
 
 $user = $_SESSION['user'];
-
-
 ?>
-    <h2>Witaj, <?php echo $user['username']; ?>!</h2>
-    <p>To jest twój panel użytkownika.</p>
-    <a href="<?php echo BASE_URL; ?>/logout"><button>Wyloguj się</button></a>
-<?php include BASE_PATH . '/views/footer.php'; ?>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>Menu</h2>
+    <ul class="flex-left">
+        <li><a href="?page=dashboard&task=users">Użytkownicy</a></li>
+        <li><a href="?page=dashboard&task=schedule">Harmonogram</a></li>
+        <li><a href="?page=dashboard&task=messages">Wiadomości</a></li>
+        <li><a href="?page=dashboard&task=settings">Ustawienia</a></li>
+    </ul>
+</div>
+
+<!-- Dynamic Content -->
+<div id="main-content">
+    <?php
+    // Wczytanie dynamicznego taska w dashboardzie
+    $task = isset($_GET['task']) ? $_GET['task'] : 'main';
+
+    // Ścieżka do pliku na podstawie zadania (task)
+    $taskPath = BASE_PATH . "/views/dashboard/{$task}.php";
+
+    if (file_exists($taskPath)) {
+        include $taskPath; // Ładowanie odpowiedniego taska
+    } else {
+        echo "<h1>Strona nie znaleziona</h1>";
+    }
+    ?>
+</div>
+<style>
+    #main-content {
+        flex: 1;
+        margin: 0px 200px;
+    }
+</style>

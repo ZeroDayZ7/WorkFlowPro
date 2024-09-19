@@ -10,6 +10,6 @@ RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /.*\.php\ HTTP/
 RewriteRule ^(.*)\.php$ /$1 [R=301,L]
 
 # Przepisywanie dla ścieżek z katalogami
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^([^/]+)/([^/]+)/?$ $1/$2.php [L]
+
+# RewriteRule ^([a-zA-Z0-9_-]+)$ index.php?page=$1 [L,QSA]

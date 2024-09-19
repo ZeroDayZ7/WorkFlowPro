@@ -28,29 +28,62 @@ html, body {
     height: 100vh;
 }
 #app{
-    flex: 1; /* Sprawia, że #app zajmuje dostępne miejsce w pionie */
+    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centruje zawartość pionowo */
-    align-items: center; /* Centruje zawartość poziomo */
-    text-align: center; /* Opcjonalnie, aby tekst był wyśrodkowany */
-}
-#content{
-    display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    text-align: center;
+    height: 100vh; /* wysokość na pełen ekran */
+}
+#content-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%; /* Wyśrodkowanie pionowe */
+}
+#content {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
 }
 .btn{
     padding: 4px;
-    border: 0px;
     width: 100%;
     cursor: pointer;
 }
 .btn:hover{
-    border: 1px solid black;
+    box-shadow: 0 0 1px 1px black;
 }
 .box-w-200{
     display: flex;
     flex-direction: column;
     width: 200px;
+}
+input{
+    width: 100%;
+    outline-offset: 0px;
+}
+input:focus, button:focus {
+    outline: none;
+    border: none;
+}
+input, button {
+    padding: 4px;
+    border: none;
+}
+.sidebar{
+    background-color: #989898;
+    height: 100%;
+}
+.flex-left{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0px 10px 0px 10px;
 }
