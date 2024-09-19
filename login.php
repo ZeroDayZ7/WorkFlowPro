@@ -1,7 +1,6 @@
 <?php
 session_start();
 include 'config.php';
-include BASE_PATH . '/views/header.php';
 
 require_once BASE_PATH . '/config/Database.php';
 require_once BASE_PATH . '/classes/User.php';
@@ -39,6 +38,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <button type="submit">Zaloguj się</button>
 </form>
 <p>Nie masz konta? <a href="<?php echo BASE_URL; ?>/register">Zarejestruj się</a></p>
-
-
-<?php include 'views/footer.php'; ?>
