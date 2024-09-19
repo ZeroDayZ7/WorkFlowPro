@@ -12,7 +12,7 @@
 
     .day {
         border: 1px solid #ccc;
-        padding: 10px;
+        padding: 2px;
         min-height: 100px;
         position: relative;
     }
@@ -27,6 +27,13 @@
     .employee {
         font-size: 14px;
         color: #333;
+    }
+
+    .employee-div-up {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .navigation {
@@ -84,24 +91,25 @@
         cursor: pointer;
     }
 </style>
-
-
 <?php
 // Ustawienie domyślnych wartości (miesiąc, rok)
 $month = isset($_GET['month']) ? (int)$_GET['month'] : date('m');
 $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
 
 // Funkcja generująca liczbę dni w miesiącu
-function daysInMonth($month, $year) {
+function daysInMonth($month, $year)
+{
     return cal_days_in_month(CAL_GREGORIAN, $month, $year);
 }
 
 // Przykładowe dane pracowników
 $employees = [
-    ['name' => 'Joe', 'shift' => '10:00-18:00', 'day' => 3],
-    ['name' => 'Anna', 'shift' => '09:00-17:00', 'day' => 10],
-    ['name' => 'Chris', 'shift' => '12:00-20:00', 'day' => 15],
-    ['name' => 'Jane', 'shift' => '08:00-16:00', 'day' => 22],
+    ['name' => 'Joe', 'shift' => '10:00-18:00', 'day' => 3, 'details' => 'Dodatkowe informacje o Joe'],
+    ['name' => 'Anna', 'shift' => '09:00-17:00', 'day' => 10, 'details' => 'Anna specjalizuje się w projektach IT'],
+    ['name' => 'Chris', 'shift' => '12:00-20:00', 'day' => 15, 'details' => 'Chris jest kierownikiem projektu'],
+    ['name' => 'Jane', 'shift' => '08:00-16:00', 'day' => 22, 'details' => 'Jane zajmuje się analizą danych'],
+    ['name' => 'Mike', 'shift' => '14:00-22:00', 'day' => 3, 'details' => 'Mike pracuje w dziale HR'],
+    ['name' => 'Sarah', 'shift' => '06:00-14:00', 'day' => 5, 'details' => 'Sarah prowadzi zespół sprzedaży'],
 ];
 
 // Obliczenie pierwszego dnia miesiąca
@@ -115,7 +123,8 @@ $prevYear = $month - 1 > 0 ? $year : $year - 1;
 $nextYear = $month + 1 < 13 ? $year : $year + 1;
 
 // Funkcja do generowania linków z zachowaniem istniejących parametrów
-function buildUrlWithParams($params) {
+function buildUrlWithParams($params)
+{
     $currentUrl = $_SERVER['REQUEST_URI'];
     $query = parse_url($currentUrl, PHP_URL_QUERY);
     parse_str($query, $queryParams);
@@ -124,7 +133,8 @@ function buildUrlWithParams($params) {
     return strtok($currentUrl, '?') . '?' . $newQuery;
 }
 ?>
- <button id="showCalendarBtn" class="btn-primary">Pokaż kalendarz</button>
+
+
 <h1>Kalendarz - <?php echo date('F Y', strtotime("$year-$month-01")); ?></h1>
 
 <div class="navigation">
@@ -145,16 +155,30 @@ function buildUrlWithParams($params) {
         echo '<div class="day-number">' . $day . '</div>';
 
         // Wyświetlanie pracowników na dany dzień
+        $hasEmployee = false; // Flaga, czy dany dzień ma pracowników
+        echo '<div class="employee-div-up"><div class="employee-div">';
         foreach ($employees as $employee) {
             if ($employee['day'] == $day) {
+                $hasEmployee = true;
                 echo '<div class="employee">';
-                echo $employee['name'] . '<br>';
-                echo 'Zmiana: ' . $employee['shift'];
+                echo $employee['name'] . '-' . $employee['shift'];
                 echo '</div>';
             }
         }
-
         echo '</div>';
+
+        // Jeśli są pracownicy w danym dniu, dodaj przycisk do modala
+        if ($hasEmployee) {
+            echo '
+            <div class="panel-btn">
+                <button onclick="openModal(' . $day . ')">Rozwiń</button>
+                <button title="Edytuj">E</button>
+                <button title="Usuń">U</button>
+            </div>
+            ';
+        }
+
+        echo '</div></div>';
     }
     ?>
 </div>
@@ -167,20 +191,6 @@ function buildUrlWithParams($params) {
         <div id="modal-body"></div>
     </div>
 </div>
-
-<!-- Modal -->
-<div id="calendarModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="close">&times;</span>
-                <h2>Wybierz dzień</h2>
-            </div>
-            <div class="calendar" id="calendarModalContent">
-                <!-- Kalendarz zostanie załadowany tutaj przez JS -->
-            </div>
-            <button id="selectDateBtn" class="btn-primary">Wybierz dzień</button>
-        </div>
-    </div>
 
 <script>
     // Przykładowe dane do modala
@@ -212,60 +222,4 @@ function buildUrlWithParams($params) {
             closeModal();
         }
     }
-
-
-
-
-
-// Open modal
-document.getElementById('showCalendarBtn').onclick = function() {
-            document.getElementById('calendarModal').style.display = 'flex';
-            loadCalendar();
-        }
-
-        // Close modal
-        document.querySelector('.close').onclick = function() {
-            document.getElementById('calendarModal').style.display = 'none';
-        }
-
-        // Load calendar into modal
-        function loadCalendar() {
-            const calendarContainer = document.getElementById('calendarModalContent');
-            const now = new Date();
-            const month = now.getMonth() + 1; // Months are zero-based
-            const year = now.getFullYear();
-            const daysInMonth = new Date(year, month, 0).getDate();
-            const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
-
-            let html = '';
-            for (let i = 0; i < firstDayOfMonth; i++) {
-                html += '<div class="day"></div>';
-            }
-            for (let day = 1; day <= daysInMonth; day++) {
-                html += `<div class="day" data-day="${day}">${day}</div>`;
-            }
-            calendarContainer.innerHTML = html;
-
-            // Add click event to each day
-            calendarContainer.querySelectorAll('.day').forEach(dayElement => {
-                dayElement.onclick = function() {
-                    document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
-                    this.classList.add('selected');
-                }
-            });
-        }
-
-        // Select date and close modal
-        document.getElementById('selectDateBtn').onclick = function() {
-            const selectedDayElement = document.querySelector('.calendar .day.selected');
-            if (selectedDayElement) {
-                const selectedDay = selectedDayElement.getAttribute('data-day');
-                // Update the content with selected date
-                document.getElementById('main-content').innerHTML = `<h2>Wybrany dzień: ${selectedDay}</h2>`;
-                document.getElementById('calendarModal').style.display = 'none';
-            } else {
-                alert('Proszę wybrać dzień.');
-            }
-        }
-
 </script>
