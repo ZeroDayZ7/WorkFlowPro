@@ -12,7 +12,7 @@ include BASE_PATH . '/views/header.php';
 ?>
 
 <div id="app">
-    <?php if (isset($_SESSION['user'])): ?>
+    <?php if (!isset($_SESSION['user'])): ?>
         <!-- Układ wyśrodkowany dla użytkowników niezalogowanych -->
         <div id="content-center">
             <?php 

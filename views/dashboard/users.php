@@ -47,55 +47,80 @@ function buildUrlWithParams($params)
 }
 ?>
 
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.4);
+        padding-top: 60px;
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .status-indicator {
+        display: flex;
+        align-items: center;
+    }
+
+    .status-circle {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: green;
+        margin-right: 8px;
+    }
+
+    .status-text {
+        font-size: 16px;
+        color: #333;
+    }
+</style>
 
 
-<h1>Lista Użytkowników</h1>
+<h1>Lista Pracowników</h1>
 
 <form method="GET" action="">
     <input type="text" name="search" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>" placeholder="Szukaj...">
@@ -109,6 +134,7 @@ function buildUrlWithParams($params)
             <th>Imię</th>
             <th>Nazwisko</th>
             <th>Opcje</th>
+            <th>Aktywny</th>
         </tr>
     </thead>
     <tbody>
@@ -117,6 +143,12 @@ function buildUrlWithParams($params)
                 <td><?php echo htmlspecialchars($user['id']); ?></td>
                 <td><?php echo htmlspecialchars($user['first_name']); ?></td>
                 <td><?php echo htmlspecialchars($user['last_name']); ?></td>
+                <td>
+                    <div class="status-indicator">
+                        <div class="status-circle"></div>
+                        <span class="status-text">Online</span>
+                    </div>
+                </td>
                 <td>
                     <button onclick="openModal(<?php echo htmlspecialchars($user['id']); ?>)">Ustawienia</button>
                 </td>
@@ -152,7 +184,7 @@ function buildUrlWithParams($params)
 
         if (user) {
             modalBody.innerHTML = `
-                <h2>Ustawienia Użytkownika</h2>
+                <h2>Ustawienia Pracownika</h2>
                 <p>ID: ${user.id}</p>
                 <p>Imię: ${user.first_name}</p>
                 <p>Nazwisko: ${user.last_name}</p>
